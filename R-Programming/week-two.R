@@ -78,3 +78,38 @@ columnmean <- function(x, removeNA = TRUE) {
     means
 }
 
+# Lexical Scoping: the result is another function. I have to call another name, pass an argument and then pass another one
+
+make.power <- function(n) {
+    pow <- function(x){
+        x^n
+    }
+    pow
+}
+
+# Another lexical example
+
+y <- 10
+
+f <- function(x){
+    y <- 2
+    y^2 + g(x)
+}
+
+g <- function(x) {
+    x * y
+}
+# when I call f(3) it will use in f function 2 for y, but in g function it will use 10, because they are in different environments
+
+## Beggining of the quizz ##
+
+#1 
+cube <- function(x, n) {
+    x^3
+}
+
+#2
+x <- 1:10
+if(x > 5){
+    x <- 0
+}
