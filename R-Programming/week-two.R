@@ -103,13 +103,46 @@ g <- function(x) {
 
 ## Beggining of the quizz ##
 
-#1 
+#1 What is the result of running cube(3)
 cube <- function(x, n) {
     x^3
 }
 
-#2
+#2 The following code will produce a warning in R.
 x <- 1:10
 if(x > 5){
     x <- 0
+}
+
+#3 
+f <- function(x) {
+    g <- function(y) {
+        y + z
+    }
+    z <- 4
+    x + g(x)
+}
+
+#4
+
+x <- 5
+y <- if(x < 3) {
+    NA
+} else {
+    10
+}
+
+#5 f is the free variable
+
+h <- function(x, y = NULL, d = 3L) {
+    z <- cbind(x, d)
+    if(!is.null(y))
+        z <- z + y
+    else
+        z <- z + f
+    g <- x + y / z
+    if(d == 3L)
+        return(g)
+    g <- g + 10
+    g
 }
