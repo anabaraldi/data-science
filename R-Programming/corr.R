@@ -12,7 +12,6 @@ corr <- function(directory, threshold = 0) {
         dat <- read.csv(directoryFiles[i])
         dat <- dat[complete.cases(dat), ]
         if(nrow(dat) > threshold){
-            cat(i, nrow(dat), "\n")
             correl <- c(correl, cor(dat$sulfate, dat$nitrate))  
         }
     }
