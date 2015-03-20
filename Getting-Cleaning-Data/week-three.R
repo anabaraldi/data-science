@@ -32,3 +32,42 @@ download.file(fileUrl2,destfile="./week3-peerreview/solutions.csv",method="curl"
 reviews = read.csv("./week3-peerreview/reviews.csv"); solutions <- read.csv("./week3-peerreview/solutions.csv")
 
 mergedData <- merge(reviews, solutions, by.x="solution_id", by.y="id", all=TRUE)
+
+## Quizz 3
+
+##Question 1
+if(!file.exists("./idaho")){dir.create("./idaho")}
+fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+download.file(fileUrl,destfile="./idaho/idaho.csv",method="curl")
+idahoData <- read.csv("./idaho/idaho.csv")
+agricultureLogical <- idahoData$ACR > 2 & idahoData$AGS > 5
+which(agricultureLogical)
+
+##Question 2
+library(jpeg)
+if(!file.exists("./jeff")){dir.create("./jeff")}
+fileUrl <- "http://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg"
+download.file(fileUrl,destfile="./jeff/jeff.jpg",method="curl")
+jeff <- readJPEG("./jeff/jeff.jpg", native = TRUE )
+quantile(jeff, probs = c(0.3, 0.8))
+
+##Question 3
+if(!file.exists("./gdp")){dir.create("./gdp")}
+fileUrl1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+fileUrl2 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv"
+download.file(fileUrl1,destfile="./gdp/gdp.csv",method="curl")
+download.file(fileUrl2,destfile="./gdp/education.csv",method="curl")
+gdp <- read.csv("./gdp/gdp.csv", skip = 4); education <- read.csv("./gdp/education.csv")
+gdp$X.1 <- as.numeric(as.character(gdp$X.1)) ## to transform the factor in numeric without changing the order
+mergedData <- merge(education, gdp[1:190,], by.x = "CountryCode", by.y = "X") #we don't use all the lines in gdp because there are some that aren't countries
+arranged <- arrange(mergedData, desc(X.1))
+arranged[13,1]
+
+##Question 4
+mergedData %>%
+    group_by(Income.Group) %>%
+    summarise(mean(X.1))
+
+##Question 5
+mergedData$X.1groups <- cut2(mergedData$X.1, g=5) ## it will create a new col by divinding the original one in five groups (quantiles)
+table(mergedData$X.1groups, mergedData$Income.Group)
