@@ -52,6 +52,7 @@ jeff <- readJPEG("./jeff/jeff.jpg", native = TRUE )
 quantile(jeff, probs = c(0.3, 0.8))
 
 ##Question 3
+library(dplyr)
 if(!file.exists("./gdp")){dir.create("./gdp")}
 fileUrl1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
 fileUrl2 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv"
@@ -69,5 +70,6 @@ mergedData %>%
     summarise(mean(X.1))
 
 ##Question 5
+library(Hmisc)
 mergedData$X.1groups <- cut2(mergedData$X.1, g=5) ## it will create a new col by divinding the original one in five groups (quantiles)
 table(mergedData$X.1groups, mergedData$Income.Group)
