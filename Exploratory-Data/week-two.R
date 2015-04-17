@@ -29,3 +29,9 @@ qplot(displ, hwy, data = mpg, color = drv) #highlight some groups, automatically
 qplot(displ, hwy, data = mpg, geom = c("point", "smooth")) #add some statistics 
 qplot(displ, hwy, data = mpg, facets = .~drv) #facets are like panels in lattice
 
+# Quizz 2
+library(nlme)
+library(lattice)
+xyplot(weight ~ Time | Diet, BodyWeight)
+
+
