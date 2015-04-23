@@ -9,15 +9,17 @@ unzip("exdata-data-NEI_data.zip")
 NEI <- readRDS("summarySCC_PM25.rds")
 SCC <- readRDS("Source_Classification_Code.rds")
 
-baltimoreNEI <- mutate(NEI, type=as.factor(type)) %>%
+# The following code will filter only Baltimore measurements, then group the data by year and type
+# and take the sum for the groups
+groupedNEI <- mutate(NEI, type=as.factor(type)) %>%
     filter(fips == "24510") %>%
-    select(type, year, Emissions) %>%
     group_by(year, type) %>%
     summarise(emissionsSum=sum(Emissions))
 
+# Creating the plot
 png("plot3.png")
-ggplot(baltimoreNEI, aes(year, emissionsSum, color=type)) + 
-    geom_line() +
+ggplot(groupedNEI, aes(year, emissionsSum, color=type)) + 
+    geom_smooth() +
     xlab("Year") +
     ylab("Total PM2.5 Emission (in ton)") +
     ggtitle("Total PM2.5 Emission in Baltimore City by Type - 1999 to 2008")

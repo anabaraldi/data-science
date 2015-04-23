@@ -8,18 +8,21 @@ unzip("exdata-data-NEI_data.zip")
 NEI <- readRDS("summarySCC_PM25.rds")
 SCC <- readRDS("Source_Classification_Code.rds")
 
-# The following code will filter only Baltimore measurements, then group the data by year 
+# The following code will filter the SCC file so we can subset the data with only the Coal Combustion-Related Sources
+coalSCC <- filter(SCC, grepl("[Cc]oal", SCC$Short.Name))
+
+# The following code will filter only Coal Combustion-Related sources, then group the data by year 
 # and take the sum for each year
-groupedNEI <- filter(NEI, fips == "24510") %>%
+coalNEI <- filter(NEI, SCC %in% coalSCC$SCC) %>%
     group_by(year) %>%
     summarise(emissionsSum=sum(Emissions)) %>%
     mutate(emissionsSum=emissionsSum / 10 ^ 3)
 
 # Creating the plot
-png("plot2.png")
-barplot(groupedNEI$emissionsSum, 
-        names.arg=groupedNEI$year,
+png("plot4.png")
+barplot(coalNEI$emissionsSum, 
+        names.arg=coalNEI$year,
         xlab="Year",
         ylab="Total PM2.5 Emission (in kiloton)",
-        main="Total PM2.5 Emission in Baltimore City - 1999 to 2008")
+        main="Coal Combustion-Related Sources PM2.5 Emission - 1999 to 2008")
 dev.off()

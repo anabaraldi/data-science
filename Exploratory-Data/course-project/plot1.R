@@ -8,10 +8,12 @@ unzip("exdata-data-NEI_data.zip")
 NEI <- readRDS("summarySCC_PM25.rds")
 SCC <- readRDS("Source_Classification_Code.rds")
 
+# The following code will group the data by year and then take the sum for each year
 groupedNEI <- group_by(NEI, year) %>%
     summarise(emissionsSum=sum(Emissions)) %>%
     mutate(emissionsSum=emissionsSum / 10 ^ 3)
 
+# Creating the plot
 png("plot1.png")
 barplot(groupedNEI$emissionsSum, 
         names.arg=groupedNEI$year,
