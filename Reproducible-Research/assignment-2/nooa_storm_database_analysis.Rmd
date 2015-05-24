@@ -1,0 +1,111 @@
+---
+title: "NOAA Storm Database Analysis"
+author: "Ana Baraldi"
+date: "May 21, 2015"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(reshape2)
+```
+
+```{r setup}
+opts_chunk$set(fig.align = "center")
+options(scipen = 1, digits = 2)
+```
+
+## Data Processing
+
+```{r, cache=TRUE}
+if(!file.exists("data.csv")) {
+    download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2", destfile = "data.csv", method="curl")
+}
+
+data <- read.csv2("data.csv", sep = ",", stringsAsFactors = FALSE)
+data <- mutate(data, FATALITIES = as.numeric(FATALITIES),
+               INJURIES = as.numeric(INJURIES),
+               PROPDMG = as.numeric(PROPDMG),
+               CROPDMG = as.numeric(CROPDMG))
+```
+
+Before we begin our analysis, lets check what we have in our columns.
+
+```{r}
+names(data)
+```
+
+For our analysis the most important columns are going to be `EVTYPE` that tell us the storm event, `FATALITIES` and `INJURIES` to check the most harmful events and `PROPDMG` to measure the economic consequences.
+Just to have a better view of our data, we are going to check the dataset dimension.
+
+```{r}
+dim <- dim(data)
+```
+As we can see our dataset has `r dim[1]` lines and `r dim[2]` columns. It is a quite large dataset. 
+
+Now, lets begin our analysis!
+
+## Results
+
+In the first part of the analysis we are going to check the most harmful events, that's why we will group our data by event type and then take the sum of the fatalities to see how many deaths have occurred between 1950 and 2011. 
+```{r}
+grouped_fatalities <- group_by(data, EVTYPE) %>%
+    summarise(fatalities=sum(FATALITIES)) %>%
+    arrange(desc(fatalities)) 
+
+total_fatality <- sum(grouped_fatalities$fatalities)
+
+summary(grouped_fatalities)
+```
+As we can see from the summary, we have 985 events types and at least 75% of them doesn't count with any case of death. We had within all our data `r total_fatality` numbers of deaths. So let's slice our data with the 15 events which had the biggest number of fatalities. 
+
+```{r}
+sliced_fatalities <- slice(grouped_fatalities, 1:15)
+
+total_sliced_fatalities <- sum(sliced_fatalities$fatalities)
+
+sliced_fatalities
+```
+Just to point out, our new sliced data have `r total_sliced_fatalities` number of deaths, that represents `r paste0(round(total_sliced_fatalities/total_fatality*100), "%")` from our original data.
+
+As we can see the event that has induced more deaths was `TORNADO` with 5633 fatalities, followed by `EXCESSIVE HEAT` with 1903 fatalities.
+
+To make our analysis more complete we are going to consider also the `INJURIES` to check the most harmful storm events across the USA, but we are not going to do the same process again. As we have the 15 events that contains at least `r paste0(round(total_sliced_fatalities/total_fatality*100), "%")` of all deaths, we are going to check the same events for `INJURIES`.
+
+```{r}
+grouped_injuries <- group_by(data, EVTYPE) %>%
+    summarise(injuries=sum(INJURIES))
+
+total_injury <- sum(grouped_injuries$injuries)
+
+summary(grouped_injuries)
+```
+Just a little check in our `INJURIES` grouped data... We still have at least 75% events without any kind of harm to people health. Of course, the events may differ from the ones of `FATALITIES` grouped data, but as we expected the number of total injuries is a little higher, in our total dataset we have `r total_injury` numbers of injuries from differents kinds of events.
+
+Now we can merge our two grouped datasets and see what happens...
+```{r}
+joined_data <- left_join(sliced_fatalities, grouped_injuries, by="EVTYPE")
+joined_data <- melt(joined_data, id="EVTYPE")
+names(joined_data) <- c("event_type", "consequence", "total")
+
+ggplot(joined_data, aes(event_type, total, fill=consequence)) + 
+    geom_bar(stat="identity", position="dodge") +
+    facet_wrap(~event_type, scales="free", as.table=FALSE) +
+    ylab("Number of Occurrences") +
+    xlab("Event Type") +
+    ggtitle("Comparision between the most Harmful Natural Events") +
+    theme(legend.title=element_blank())
+```
+As we can see in the plot, most of the events have a larger number of `INJURIES` than `FATALITIES`. The only exceptions are `AVALANCHE` and `RIP CURRENT`, I guess it's because it doesn't happen all the time, but when it occurs it's more difficult to survive it.
+
+
+```{r}
+
+```
+
+```{r}
+
+```
+
