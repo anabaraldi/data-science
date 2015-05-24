@@ -5,6 +5,14 @@ date: "May 21, 2015"
 output: html_document
 ---
 
+### Synopsis
+
+Our dataset contains data from natural disasters across the USA between 1950 and 2011. Our focuses are going to be the most harmful events for human health and the impact in economics. 
+
+### Data Processing
+
+Before we read our data, we are going to load the required libraries and set the global options for the data analysis.
+
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
@@ -17,7 +25,7 @@ opts_chunk$set(fig.align = "center")
 options(scipen = 1, digits = 2)
 ```
 
-## Data Processing
+Now we will start working with the data :)
 
 ```{r, cache=TRUE}
 if(!file.exists("data.csv")) {
@@ -37,7 +45,7 @@ Before we begin our analysis, lets check what we have in our columns.
 names(data)
 ```
 
-For our analysis the most important columns are going to be `EVTYPE` that tell us the storm event, `FATALITIES` and `INJURIES` to check the most harmful events and `PROPDMG` to measure the economic consequences.
+For our analysis the most important columns are going to be `EVTYPE` that tell us the storm event, `FATALITIES` and `INJURIES` to check the most harmful events and `PROPDMG` and `CROPDMG` to measure the economic consequences.
 Just to have a better view of our data, we are going to check the dataset dimension.
 
 ```{r}
@@ -47,7 +55,7 @@ As we can see our dataset has `r dim[1]` lines and `r dim[2]` columns. It is a q
 
 Now, lets begin our analysis!
 
-## Results
+### Results
 
 In the first part of the analysis we are going to check the most harmful events, that's why we will group our data by event type and then take the sum of the fatalities to see how many deaths have occurred between 1950 and 2011. 
 ```{r}
@@ -59,7 +67,7 @@ total_fatality <- sum(grouped_fatalities$fatalities)
 
 summary(grouped_fatalities)
 ```
-As we can see from the summary, we have 985 events types and at least 75% of them doesn't count with any case of death. We had within all our data `r total_fatality` numbers of deaths. So let's slice our data with the 15 events which had the biggest number of fatalities. 
+As we can see from the summary, we have 985 events types and at least 75% of them don't count with any case of death. We had within all our data `r total_fatality` deaths. So let's slice our data with the 15 events which had the biggest number of fatalities. 
 
 ```{r}
 sliced_fatalities <- slice(grouped_fatalities, 1:15)
@@ -68,7 +76,7 @@ total_sliced_fatalities <- sum(sliced_fatalities$fatalities)
 
 sliced_fatalities
 ```
-Just to point out, our new sliced data have `r total_sliced_fatalities` number of deaths, that represents `r paste0(round(total_sliced_fatalities/total_fatality*100), "%")` from our original data.
+Just to point out, our new sliced data have `r total_sliced_fatalities` deaths, that represents `r paste0(round(total_sliced_fatalities/total_fatality*100), "%")` from our original data.
 
 As we can see the event that has induced more deaths was `TORNADO` with 5633 fatalities, followed by `EXCESSIVE HEAT` with 1903 fatalities.
 
@@ -96,16 +104,41 @@ ggplot(joined_data, aes(event_type, total, fill=consequence)) +
     ylab("Number of Occurrences") +
     xlab("Event Type") +
     ggtitle("Comparision between the most Harmful Natural Events") +
-    theme(legend.title=element_blank())
+    theme(legend.title=element_blank(), strip.text.x = element_blank())
 ```
 As we can see in the plot, most of the events have a larger number of `INJURIES` than `FATALITIES`. The only exceptions are `AVALANCHE` and `RIP CURRENT`, I guess it's because it doesn't happen all the time, but when it occurs it's more difficult to survive it.
 
+Now, lets start the analysis of the impact in economics. We have two variables to deal with: `PROPDMG` and `CROPDMG`, the first one is about property damage and the second one about the crop damage.
+First we are going to group the damages by type of event and then sum the two kinds of damage to create a total damage.
 
 ```{r}
+grouped_damage <- group_by(data, EVTYPE) %>%
+    summarise(property_damage=sum(PROPDMG), crop_damage=sum(CROPDMG)) %>%
+    mutate(totaldmg=property_damage + crop_damage) %>%
+    arrange(desc(totaldmg))
 
+total_damage <- sum(grouped_damage$totaldmg)
+
+summary(grouped_damage)
 ```
+As we can see, we don't have any damage in almost 75% of the cases, but in total damage across the time we have a total cost of `r paste("US$", total_damage)`.
+We are going to follow the same idea from the last analysis, so we are going to cut our data with the top 15 events.
 
+Lets see what we got...
 ```{r}
+sliced_damage <- slice(grouped_damage, 1:15) %>%
+    select(EVTYPE, property_damage, crop_damage)
+sliced_damage <- melt(sliced_damage, id="EVTYPE")
+names(sliced_damage) <- c("event_type", "damage", "total")
 
+sliced_damage_total <- sum(sliced_damage$total)
+
+ggplot(sliced_damage, aes(event_type, total, fill=damage)) +
+    geom_bar(stat="identity") +
+    xlab("Event Type") +
+    ylab("Total Damage in US$") +
+    ggtitle("Damage caused by Natural Disasters") +
+    scale_fill_discrete(name="Kind of Damage", labels=c("Property Damage", "Crop Damage")) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
-
+As we can see most of the expenditure with Natural Disasters comes from Property Damage and with our sliced data we had a total cost of `r paste("US$", sliced_damage_total)`, which represents `r paste0(round(sliced_damage_total/total_damage * 100), "%")` from the original data.
