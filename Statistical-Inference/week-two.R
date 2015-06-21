@@ -26,6 +26,21 @@ qnorm(.95, mean=mu, sd=sd)
 0.56 + c(-1,1) * qnorm(0.975) * sqrt(0.56 * 0.44 / 100)
 binom.test(56, 100)$conf.int
 
+# simulation confidence interval
+
+n <- 20
+pvals <- seq(0.1, 0.9, by=0.05)
+nosim <- 1000
+
+coverage <- sapply(pvals, function(p) {
+    phats <- rbinom(nosim, prob=p, size=n) / n
+    ll <- phats - qnorm(0.975) * sqrt(phats * (1 - phats) / n)
+    ul <- phats + qnorm(0.975) * sqrt(phats * (1 - phats) / n)
+    mean(ll < p & ul > p)
+})
+
+ggplot(data.frame(pvals, coverage), aes(coverage, pvals)) + geom_line() + geom_hline(yintercept=0.95)
+
 # quizz
 
 # question 2
