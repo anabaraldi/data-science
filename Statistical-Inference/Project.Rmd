@@ -1,0 +1,95 @@
+---
+title: "Exponential Distribution and The Central Limit Theory"
+author: "Ana Baraldi"
+date: "June 21, 2015"
+output: html_document
+---
+
+## Overview
+
+Here we are going to do a simulation with the Exponential Distribution and check if the Central Limit Theorem works with it!
+
+## Simulations
+
+Before we begin, lets load the libraries we are going to use and set up our global chunks:
+```{r}
+library(ggplot2)
+library(knitr)
+opts_chunk$set(cache=TRUE, fig.align = "center")
+```
+
+First of all we're going to set our parameters for the simulations. We are going to check the Central Limit Theorem with the Exponential Distribution.
+In the theoretical world, the mean of exponential distribution is `1/lambda` and the standard deviation is also `1/lambda`. 
+We're going to set lambda as 0.2 and our sample size is going to be 40.
+
+```{r}
+lambda <- 0.2
+n <- 40
+theoretical_mean <- 1 / lambda
+theoretical_sd <- 1 / lambda
+standard_error <- theoretical_sd / sqrt(n)
+```
+
+That will give us a theoritical mean of `r theoretical_mean` and a theoretical standard deviation of `r theoretical_sd`. As we're going to work with a sample of size `r n` our standard error is going to be `r standard_error`.
+Now, let's go further in our simulation. We are going to simulate our data a thousand times, following is the code for our simulation, please note that `x` is going to be our sample mean in each simulation.
+
+```{r}
+nosim <- 1000
+data <- rexp(n * nosim, lambda)
+matrix <- matrix(data, nosim)
+```
+
+## Sample Mean vs. Theoretical Mean
+
+```{r}
+sample_mean <- data.frame(mean=apply(matrix, 1, mean))
+
+g <- ggplot(sample_mean, aes(mean)) +
+    geom_histogram(binwidth=.1) +
+    geom_vline(aes(xintercept=theoretical_mean, colour="red")) +
+    geom_vline(aes(xintercept=mean(data), colour="green")) +
+    ggtitle("Sample Mean vs. Theoretical means") +
+    xlab("Mean") +
+    ylab("Density")
+
+print(g)
+```
+
+Even with the visual help, the chart, it is quite difficult to see the difference between the means.
+Only to compare the numbers, our theoretical mean is `r theoretical_mean` and our sample mean is `r mean(sample_mean$mean)`.
+
+## Sample Variance vs. Theoretical Variance
+
+```{r}
+sample_variance <- data.frame(var=apply(matrix, 1, var))
+
+g1 <- ggplot(sample_variance, aes(var)) +
+    geom_histogram(binwidth=1) +
+    geom_vline(aes(xintercept=theoretical_sd ^ 2, colour="red")) +
+    geom_vline(aes(xintercept=var(data), colour="green")) +
+    ggtitle("Sample Variance vs. Theoretical Variance") +
+    xlab("Variance") +
+    ylab("Density")
+
+print(g1)
+```
+As we can see, the variance is also quite the same.
+Here we're talking about a theoretical variance of `r theoretical_sd ^ 2` and a sample variance of `r var(sample_variance$var)`.
+
+## Distribution
+
+```{r}
+seq <- seq(theoretical_mean - 4 * standard_error, theoretical_mean + 4 * standard_error, by=.1)
+g <- ggplot(sample_mean, aes(mean)) +
+    geom_histogram(aes(y=..density..), binwidth=.1) +
+    geom_line(data=data.frame(x=seq, y=dnorm(seq,
+                                             mean=theoretical_mean,
+                                             sd=standard_error)),
+                 aes(x, y), linetype="dashed", colour="red") +
+    ggtitle("Sample means x Normal densities") +
+    xlab("Values") +
+    ylab("Density")
+print(g)
+```
+
+As we can see the distribution isn't completely perfect but our sample size isn't that big, as we increase our sample size the distribution will look closer and closer than the normal distribution.
