@@ -1,0 +1,42 @@
+---
+title: "Motor Trend Research"
+author: "Ana Baraldi"
+date: "November 22, 2015"
+output: html_document
+---
+
+## What's better for your miles per galon (mpg): an automatic or a manual car? 
+### Summary
+
+This week we will investigate how cars characteristcs impact how many gallons per miles are used. For that research we are going to use the `mtcars` dataset. 
+
+#### Data Processing
+
+Before we read our data, we are going to load the required libraries and set the global options for the data analysis and regression modeling.
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(reshape2)
+```
+
+```{r setup}
+opts_chunk$set(fig.align = "center")
+options(scipen = 1, digits = 2)
+```
+
+Lets look for our data 
+```{r}
+summary(mtcars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+x <- plot(cars)
+```
+
+```{r, echo=FALSE}
+print(x)
+```
