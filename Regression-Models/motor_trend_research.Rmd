@@ -8,17 +8,14 @@ output: html_document
 ## What's better for your miles per galon (mpg): an automatic or a manual car? 
 ### Summary
 
-This week we will investigate how cars characteristcs impact how many gallons per miles are used. For that research we are going to use the `mtcars` dataset. 
-
-#### Data Processing
+This week we will investigate how cars characteristcs impact how many gallons per miles are used. For that research we are going to use the `mtcars` dataset. After our analysis we can conclude that is statistically better to have an automatic car than a manual one, if we look only for miles per galon information.
 
 Before we read our data, we are going to load the required libraries and set the global options for the data analysis and regression modeling.
 
 ```{r, message=FALSE, warning=FALSE}
-library(dplyr)
 library(ggplot2)
 library(knitr)
-library(reshape2)
+library(GGally)
 ```
 
 ```{r setup}
@@ -26,17 +23,54 @@ opts_chunk$set(fig.align = "center")
 options(scipen = 1, digits = 2)
 ```
 
-Lets look for our data 
+To begin our analysis, we are going to check the dataset dimension.
 ```{r}
-summary(mtcars)
+dim <- dim(mtcars)
+```
+As we can see our dataset has `r dim[1]` cars analyzed and `r dim[2]` different variables measured. 
+Also, lets check out which variables we are dealing with:
+```{r}
+names(mtcars)
+```
+Here we are interested in the relation between the transmission type (manual or automatic), but before we check only the relation between `mpg` and `am` (the column with the transmission information), we can see how the others variables are related with `mpg` with a paired plot. You can check it out in the Appendix (Figure 1).
+```{r, echo=FALSE}
+fig1 <- ggpairs(mtcars, title = "Figure 1: pair plot with all the variables of mtcars", lower = list(continuous = "smooth"),params = c(method = "loess"))
+```
+As we can see we have a lot of `factor` variables, as `cyl` that measures how many cylinders he have, `gear` that measures the number of forward gears and our desired information: if the car is automatic or manual is also a `factor` variable. 
+
+I could have done some further analysis between all the other variables and our outcome (`mpg`), but I have prefered to focus in the main relationship: transmission type and miles per galon. That's why I haven't done any linear model with the other infomation. We can see those relationship in our Figure 2, a boxplot with the information of `mpg` in the different cars.
+```{r, echo=FALSE}
+fig2 <- ggplot(mtcars, aes(factor(am), mpg)) + geom_boxplot() + ggtitle("Figure 2: boxplot for transmission type in cars") + xlab("am")
 ```
 
-You can also embed plots, for example:
-
+Just to make sure our variable is treated the right way, I've modified the dataset to make sure `am` is a `factor`. As `0` is for automatic cars and `1` is for manual cars.
 ```{r, echo=FALSE}
-x <- plot(cars)
+mtcars$am <- factor(mtcars$am)
 ```
 
+So, I've defined my linear model as `fit`. My outcome is `mpg` and my predictor `am`. 
+```{r}
+fit <- lm(mpg ~ am, mtcars)
+```
+Here are the summary of our model:
 ```{r, echo=FALSE}
-print(x)
+summary(fit)
+```
+As we are talking about a `factor` variable, our coefficient interpretation is a little different from the others linear models. Our `intercept` represents the information around our first level of information, in the case, the automatic cars. To interpret the other coefficient we have to think about it as the sum of itself with the `intercept`. In our case, the `intercept` is `r summary(fit)$coef[1]`, and it represents the mean for the automatic cars. To understand the information for the manual cars, we have to sum the `intercept` and `am1`, which is `r summary(fit)$coef[2] + summary(fit)$coef[1]`.
+
+Another important information we can get from the summary is that manual and automatic transmissions are statistic differents from each other, we can see it from the p-values we've got in the coefficient table. It's important, because with that information we can assure that we do have an impact in `mpg` with an automatic or manual car. It's better have an automatic car.
+
+The final part of our analysis, we have checked if our model is a good model. 
+If we look to our R Squared, that defines how much our regression explain our model, we can see it is a little low: `r summary(fit)$r.squared`, that means around 36% of the changes in `mpg` is explained by the transmission type. Which means that almost all the variation in `mpg` is explained by the residuals, the other variables.
+
+With that information we can finish our analysis, to understand all the impact in `mpg` we have to look for the other variables in dataset, but with the research we have done here we can see exclusively the relationship between the transmission type and the miles per galon.
+
+## Appendix
+### Figure 1
+```{r, echo=FALSE}
+print(fig1)
+```
+### Figure 2
+```{r, echo=FALSE}
+print(fig2)
 ```
