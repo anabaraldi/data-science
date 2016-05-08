@@ -31,12 +31,16 @@ shinyServer(
                                  t = input$t)
                 new_df <- rbind(bikes_in_sp, df)
                 new_df <- clean_data(new_df)
-                mean_bikes_per_minute <- round(mean(new_df$bikes_per_minute, na.rm = TRUE), 2)
+                bikes_in_sp <- clean_data(bikes_in_sp)
+                new_mean_bikes_per_minute <- round(mean(new_df$bikes_per_minute, na.rm = TRUE), 2)
+                old_mean_bikes_per_minute <- round(mean(bikes_in_sp$bikes_per_minute, na.rm = TRUE), 2)
                 
-                return(list(mean_bikes_per_minute = mean_bikes_per_minute))
+                return(list(new_mean_bikes_per_minute = new_mean_bikes_per_minute,
+                            old_mean_bikes_per_minute = old_mean_bikes_per_minute))
                 }
             })
         
-        output$mean_bikes_per_minute <- renderPrint(data_transformation()$mean_bikes_per_minute)
+        output$new_mean_bikes_per_minute <- renderPrint(data_transformation()$new_mean_bikes_per_minute)
+        output$old_mean_bikes_per_minute <- renderPrint(data_transformation()$old_mean_bikes_per_minute)
     }
 )
