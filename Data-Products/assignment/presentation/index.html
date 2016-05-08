@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bikes in SP Dataset</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Bikes in SP Dataset">
+  <meta name="author" content="Ana Vitória Baraldi">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Bikes in SP Dataset</h1>
+    <h2>The beginning of a big study</h2>
+    <p>Ana Vitória Baraldi<br/>Economist</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Why?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Hey everyone! :)</p>
+
+<p>I&#39;ve starting collecting some data to study the habits changes that the implementation of new bike paths in São Paulo/Brazil will make in the bike usage. 
+A lot of people complain that no one will use it, I wanna see if this is true.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>I collect 8 variables, let&#39;s take a look at it:</p>
+
+<ol>
+<li><code>d</code>: date, when the new data was collected</li>
+<li><code>st</code>, <code>eh</code>: it&#39;s the time part, <code>st</code> stands for start hour and <code>eh</code> for end hour</li>
+<li><code>c</code>: it&#39;s the climate, it can be: cloudy, clear sky, drizzling and raining</li>
+<li><code>l</code>: it&#39;s the location, which bike path I am collecting the data</li>
+<li><code>st</code>: checks if we are in a Daylight Saving Time</li>
+<li><code>t</code>: it&#39;s the temperature in Celsius</li>
+<li><code>b</code>: stands for bikes, it&#39;s the most important variable, how many bikes I&#39;ve seen during the time interval</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Let&#39;s look to the head of our data frame:</p>
+
+<pre><code>##            d       sh       eh         c       l  b st  t
+## 1 2016-02-17 19:44:00 19:57:00 drizzling berrini 21  1 24
+## 2 2016-02-18 08:59:00 09:20:00    cloudy berrini 32  1 23
+## 3 2016-02-19 09:35:00 09:50:00 clear_sky berrini 41  1 25
+## 4 2016-02-21 17:50:00 18:00:00 clear_sky berrini 11  0 25
+## 5 2016-02-23 09:37:00 09:48:00 clear_sky berrini 19  0 24
+</code></pre>
+
+<p>After that, we need to create another variable <code>bikes_per_minute</code>. All the analysis is going to be done with it. It is calculated by the number of bikes divided by the difference in minutes between the <code>start hour</code> and the <code>end hour</code>. Here is the calculation for the first row:</p>
+
+<pre><code>## [1] 1.62
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>ShinyApp</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Our ShinyApp was made to input new data for our bikes in SP dataset.
+It&#39;s just the beginning of the study. We are now collecting our data.
+Hope to have nice results in the future!</p>
+
+<p>Thanks :)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Why?'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Data'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Data'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='ShinyApp'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>

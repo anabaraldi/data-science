@@ -1,0 +1,65 @@
+---
+title       : Bikes in SP Dataset
+subtitle    : The beginning of a big study
+author      : Ana Vitória Baraldi
+job         : Economist
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Why?
+
+Hey everyone! :)
+
+I've starting collecting some data to study the habits changes that the implementation of new bike paths in São Paulo/Brazil will make in the bike usage. 
+A lot of people complain that no one will use it, I wanna see if this is true.
+
+---  
+
+## Data
+I collect 8 variables, let's take a look at it:
+
+1. `d`: date, when the new data was collected
+2. `st`, `eh`: it's the time part, `st` stands for start hour and `eh` for end hour
+3. `c`: it's the climate, it can be: cloudy, clear sky, drizzling and raining
+4. `l`: it's the location, which bike path I am collecting the data
+5. `st`: checks if we are in a Daylight Saving Time
+6. `t`: it's the temperature in Celsius
+7. `b`: stands for bikes, it's the most important variable, how many bikes I've seen during the time interval
+
+---
+
+## Data
+Let's look to the head of our data frame:
+```{r echo=FALSE}
+library(dplyr)
+library(chron)
+
+bikes_in_sp <- read.csv("../bikes_in_sp_dataset.csv", stringsAsFactors = FALSE) %>%
+    mutate(sh = chron(times = sh)) %>%
+    mutate(eh = chron(times = eh))
+
+head(bikes_in_sp, 5)
+```
+
+After that, we need to create another variable `bikes_per_minute`. All the analysis is going to be done with it. It is calculated by the number of bikes divided by the difference in minutes between the `start hour` and the `end hour`. Here is the calculation for the first row:
+
+```{r echo=FALSE}
+round(bikes_in_sp$b[[1]] / as.numeric(minutes(bikes_in_sp$eh[[1]] - bikes_in_sp$sh[[1]])), 2)
+```
+
+---
+
+## ShinyApp
+
+Our ShinyApp was made to input new data for our bikes in SP dataset.
+It's just the beginning of the study. We are now collecting our data.
+Hope to have nice results in the future!
+
+Thanks :)
+
+
