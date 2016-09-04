@@ -1,0 +1,104 @@
+---
+title: "Exploratory Analysis - Data Science Capstone"
+author: "Ana Baraldi"
+date: "September 3, 2016"
+output: html_document
+---
+## Summary
+
+In the present report we'll show the exploratory results for our Data Science Capstone. Our main goal is to build a model to predict words. For example, when I type in my cellphone the words "Do you want to", what should come next? "eat", "sleep" and a lot other possibilities. We have three datasets to work with, one from Twitter, one from Blogs and one from News.
+
+In the first part of the report we will do the analysis in each dataset separately, then we will consider it as one big dataset.
+
+---
+
+### Loading the libraries
+
+```{r library, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tm)
+```
+
+### Preparing the data
+
+First of all we'll load our data with the function `readLines` in R. I will show the process with one of the datasets, but I've done it with all three. We will call our datasets `lines_twitter`, `lines_blogs` and `lines_news`.
+
+```{r lines_twitter, message=FALSE, warning=FALSE, cache=TRUE}
+con <- file("data/final/en_US/en_US.twitter.txt", "r") 
+lines_twitter <- readLines(con)
+close(con)
+```
+
+```{r lines_blogs, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+con <- file("data/final/en_US/en_US.blogs.txt", "r") 
+lines_blogs <- readLines(con)
+close(con)
+```
+```{r lines_news, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+con <- file("data/final/en_US/en_US.news.txt", "r") 
+lines_news <- readLines(con)
+close(con)
+```
+
+Then, we will clean our data. We're used to clean our data and transform it in a tidy dataset. I think this is the biggest challenge we're undertaking. But, here we go! I will insert the code and then explain each step:
+
+Remember, I am showing with the `lines_twitter` but I am doing it with all three datasets!
+
+```{r, message=FALSE, warning=FALSE, cache=TRUE}
+tokenized_lines_twitter <- lapply(lines_twitter, function(line) {
+    line <- removeNumbers(line) 
+    line <- gsub("'", " ", line)
+    line <- removePunctuation(line)
+    line <- tolower(line)
+    line <- scan_tokenizer(line)
+    line
+})
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+tokenized_lines_blogs <- lapply(lines_blogs, function(line) {
+    line <- removeNumbers(line) 
+    line <- gsub("'", " ", line)
+    line <- removePunctuation(line)
+    line <- tolower(line)
+    line <- scan_tokenizer(line)
+    line
+})
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+tokenized_lines_news <- lapply(lines_news, function(line) {
+    line <- removeNumbers(line) 
+    line <- gsub("'", " ", line)
+    line <- removePunctuation(line)
+    line <- tolower(line)
+    line <- scan_tokenizer(line)
+    line
+})
+```
+
+1. `removeNumbers()` is used to remove the numbers existing in the dataset. 
+2. `gsub("'", " ", x)` is used to replace ' with a space, it's used to break the words `we'll` or `don't` in two words. I don't know if it's the right way to do that, but I decided to do like this because they really are two words. 
+3. `removePunctuation()` is used to remove the punctuation existing in the dataset.
+4. `tolower()` is used to make all the letters lowercase.
+5. `scan_tokenizer()` is used to break the sentences into words.
+
+Now, let's take a look at the dimension of our datasets.
+
+#### Twitter
+
+We have `r length(tokenized_lines_twitter)` tweets, and a total of `r sum(unlist(lapply(tokenized_lines_twitter, length)))` words in the whole dataset!
+
+Here is the first tweet already tokenized: `r tokenized_lines_twitter[1]`
+
+#### News
+
+We have `r length(tokenized_lines_news)` news, and a total of `r sum(unlist(lapply(tokenized_lines_news, length)))` words in the whole dataset!
+
+Here is the first news already tokenized: `r tokenized_lines_news[1]`
+
+#### Blogs
+
+We have `r length(tokenized_lines_blogs)` blogposts, and a total of `r sum(unlist(lapply(tokenized_lines_blogs, length)))` words in the whole dataset!
+
+Here is the first blogpost already tokenized: `r tokenized_lines_blogs[1]`
+
+
